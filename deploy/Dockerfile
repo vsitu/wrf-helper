@@ -8,9 +8,7 @@ RUN git config --global http.postBuffer 50M \
   && cd WPS && git checkout release-v4.4 && cd .. \
   && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
   && cp SCRIPTS/rd_l2_norm.py . && chmod 755 rd_l2_norm.py \
-  && ln -sf SCRIPTS/Namelists . \
-  && git config --global --unset http.proxy \
-  && git config --global --unset https.proxy 
+  && ln -sf SCRIPTS/Namelists . 
 
 CMD ["/bin/tcsh"]
 

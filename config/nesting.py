@@ -9,9 +9,6 @@ import os, sys
 import time
 import datetime as dt
 
-import netCDF4 as nc
-from glob import glob
-
 rearth = 6378
 cearth = rearth * np.pi * 2
 
