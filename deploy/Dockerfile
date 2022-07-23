@@ -15,7 +15,7 @@ CMD ["/bin/tcsh"]
 COPY ./*.csh /wrf/
 
 RUN chmod 755 build-wrf.csh \
-  && ./script-situ.csh BUILD CLEAN 34 1 em_real -d J=-j@8 \
+  && ./build-wrf.csh BUILD CLEAN 34 1 em_real -d J=-j@8 \
   && chmod 755 build-wps.csh
 
 ENV WRF_DIR=/wrf/WRF/
