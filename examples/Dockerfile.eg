@@ -1,0 +1,35 @@
+# 基础镜像可以直接采用Dave Gill的镜像
+FROM davegill/wrf-coop:fifteenthtry
+USER root
+
+# 可以先配置Git代理，完成下载再取消代理。
+# 下载WRF和WPS，以及Dave Gill用的一个测试脚本。这个测试脚本编译用不上，可以不下载。
+RUN git config --global http.proxy http://10.2.0.94:61003 \
+  && git config --global https.proxy http://10.2.0.94:61003 \
+  && git config --global http.postBuffer 50M \
+  && git clone https://github.com/wrf-model/WRF.git WRF \
+  && cd WRF && git checkout release-v4.4 && cd .. \
+  && git clone https://github.com/wrf-model/WPS.git WPS \
+  && cd WPS && git checkout release-v4.4 && cd .. \
+  && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
+  && cp SCRIPTS/rd_l2_norm.py . && chmod 755 rd_l2_norm.py \
+  && ln -sf SCRIPTS/Namelists . \
+  && git config --global --unset http.proxy \
+  && git config --global --unset https.proxy 
+
+# 用tcsh
+CMD ["/bin/tcsh"]
+# 复制我准备的配置脚本到镜像的工作目录
+COPY ./*.csh /wrf/
+
+# 先编译WRF，默认是341(gfortran-dmpar-basic nesting)，em_real模式，8个CPU核心进行编译。
+RUN chmod 755 script-situ.csh \
+  && ./script-situ.csh BUILD CLEAN 34 1 em_real -d J=-j@8 \
+  && chmod 755 build-wps.csh
+
+# 设置WRF目录，可以不设置，WPS会去上级目录找
+ENV WRF_DIR=/wrf/WRF/
+# 编译WPS，默认是3(gfortran-dmpar)，8是指的用8个CPU核心编译。
+RUN mv /wrf/build-wps.csh /wrf/WPS/ \
+  && cd /wrf/WPS/ \
+  && ./build-wps.csh 3 8

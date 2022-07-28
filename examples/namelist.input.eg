@@ -1,0 +1,123 @@
+&time_control
+# real不用，wrf会用。模拟的总时间，优先级高于起止日期，全0则wrf会根据起止日期计算模拟的总时间
+ run_days                            = 0,
+ run_hours                           = 60,
+ run_minutes                         = 0,
+ run_seconds                         = 0,
+# 起止日期
+ start_year                          = 2018, 2018,
+ start_month                         = 01,   01,
+ start_day                           = 01,   01,
+ start_hour                          = 00,   00,
+ end_year                            = 2018, 2018,
+ end_month                           = 01,   01,
+ end_day                             = 01,   01,
+ end_hour                            = 12,   12,
+# 输入文件的时间间隔（秒）
+ interval_seconds                    = 21600
+# 是否创建wrfinput文件，默认创建即可
+ input_from_file                     = .true.,.true.,
+# 输出数据的频率（分钟）
+ history_interval                    = 60,  10,
+# 每个文件的时间点，默认1个则每个history帧一个文件
+ frames_per_outfile                  = 1, 1,
+# 是否创建进度文件，中断后重启模拟用
+ restart                             = .false.,
+ restart_interval                    = 7200,
+# 输出文件路径
+ history_outname              = '/wrf_data/vtmp2/ysitu/wrf_output/wind_penman_20180101/wrfout_d<domain>_<date>',
+# 输入输出格式，2是netcdf，5是grib1，10是grib2。一般用2即可。
+ io_form_history                     = 2
+ io_form_restart                     = 2
+ io_form_input                       = 2
+ io_form_boundary                    = 2
+ /
+ 
+ &domains
+# 时间步长设置，默认5-6倍dx/1000值。不稳定则适当降低步长
+ time_step                           = 15,
+ time_step_fract_num                 = 0,
+ time_step_fract_den                 = 1,
+# 最大区域数量，如果设置了3个，max_dom=2，则只生成2个。
+ max_dom                             = 2,
+# 区域的东西向、南北向、垂直大小
+ e_we                                = 120,    151,
+ e_sn                                = 120,    121,
+ e_vert                              = 45,     45,
+ dzstretch_s                         = 1.1
+ p_top_requested                     = 5000,
+# 以下两个要符合metgrid的level数量
+ num_metgrid_levels                  = 26,
+ num_metgrid_soil_levels             = 4,
+# x（经度）和y（纬度）方向的分辨率
+# 表面上需要每个区域的分辨率都设置，但是实际测试下来不需要
+ dx                                  = 3000,
+ dy                                  = 3000,
+# 区域编号
+ grid_id                             = 1,     2,
+# 通过区域编号设置嵌套目标
+ parent_id                           = 0,     1,
+# 嵌套区域的起始像素（从左下角计算）
+ i_parent_start                      = 1,     29,
+ j_parent_start                      = 1,     40,
+# 被嵌套区域的放大倍率（分辨率缩小倍数）
+ parent_grid_ratio                   = 1,     3,
+# 搞不清时就1:3
+ parent_time_step_ratio              = 1,     3,
+# 大区域是否收到被嵌套的小区域的反馈
+ feedback                            = 1,
+# 建议设置成0
+ smooth_option                       = 0
+ /
+ 
+ &physics
+# 物理模型
+ physics_suite                       = 'CONUS'
+# dt就是时间频率，类似dx,dy
+# ra: radiation physics
+ radt                                = 15,    15,
+# bl: boundary layer physics，0表示每次都输出
+ bldt                                = 0,     0,
+# cu: cumulus physics
+ cudt                                = 0,     0,
+# 是否计算cloud fraction
+ icloud                              = 1,
+ num_land_cat                        = 21,
+ sf_urban_physics                    = 0,     0,
+ fractional_seaice                   = 1,
+ /
+ 
+ &fdda
+ /
+# 以下设置暂时还没弄清楚怎么配置最好
+ &dynamics
+ hybrid_opt                          = 2,
+ w_damping                           = 0,
+ diff_opt                            = 2,      2,
+ km_opt                              = 4,      4,
+ diff_6th_opt                        = 0,      0,
+ diff_6th_factor                     = 0.12,   0.12,
+ base_temp                           = 290.
+ damp_opt                            = 3,
+ zdamp                               = 5000.,  5000.,
+ dampcoef                            = 0.2,    0.2,
+ khdif                               = 0,      0,
+ kvdif                               = 0,      0,
+ non_hydrostatic                     = .true., .true.,
+ moist_adv_opt                       = 1,      1,
+ scalar_adv_opt                      = 1,      1,
+ gwd_opt                             = 1,      0,
+ /
+ 
+ &bdy_control
+ spec_bdy_width                      = 5,
+ specified                           = .true.
+ /
+ 
+ &grib2
+ /
+ 
+ &namelist_quilt
+ nio_tasks_per_group = 0,
+ nio_groups = 1,
+ /
