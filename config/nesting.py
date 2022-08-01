@@ -107,7 +107,7 @@ class Nest():
         self.i_list.append(i_parent_start)
         self.j_list.append(j_parent_start)
 
-        return ((d01.box_num, d02.box_num), (i_parent_start, j_parent_start))
+        return (d01.box_num, d02.box_num, i_parent_start, j_parent_start)
 
 if __name__=='__main__':
     print('Demo Mode')
