@@ -1,8 +1,8 @@
 import numpy as np
 
-import geopandas as gpd
-import cartopy.crs as ccrs
-from shapely.geometry import Polygon
+# import geopandas as gpd
+# import cartopy.crs as ccrs
+# from shapely.geometry import Polygon
 
 import pandas as pd
 import os, sys
@@ -19,15 +19,15 @@ class Box:
         geo_desc: [lon, lat, x_size, y_size, x_res, y_res]
             lon, lat: central longitude and latitude
             x_size, y_size: x (longitude) and y (latitude) size of the box, in pixels
-            x_res, y_res: resolution in x and y direction
+            x_res, y_res: resolution in x and y direction, in meters
         box_num: int
             for reference only
         """
         self.lon, self.lat, self.sizex, self.sizey, self.dx, self.dy = geo_desc
         self.box_num = box_num
         self.make(geo_desc)
-        self.coords = self.coords()
-        self.polygon = self.polygon()
+        self.coords = self._coords()
+        self.polygon = self._polygon()
         return
 
     def make(self, geo_desc:list):
@@ -43,12 +43,12 @@ class Box:
         self.west_n = d1_lon - (d1sizex / 2 * d1x / 1000) /(cearth* np.cos(np.pi / 180 * self.north)) * 360
         self.west_s = d1_lon - (d1sizex / 2 * d1x / 1000) /(cearth* np.cos(np.pi / 180 * self.south)) * 360
 
-    def coords(self):
+    def _coords(self):
         return([self.north, self.south, 
             self.east_n, self.east_s, 
             self.west_n, self.west_s])
 
-    def polygon(self):
+    def _polygon(self):
         polygon = [(self.west_s, self.south), 
         (self.west_n, self.north), 
         (self.east_n, self.north), 
@@ -72,26 +72,26 @@ class Nest():
         d02 and d01 should both be "Box" class objects
         """
 
-        d1_coords = d01.coords()
-        d2_coords = d02.coords()
+        d1_coords = d01.coords
+        d2_coords = d02.coords
 
-        print(d1_coords, d2_coords)
+        print('D1 coords:',d1_coords, '\n D2 Coords:',d2_coords)
         if (d02.west_s < d01.west_s) or (d02.west_n < d01.west_n):
             print(f'D02: {d02.west_s}, {d02.west_n}')
             print(f'D01: {d01.west_s}, {d01.west_n}')
-            raise ValueError ('D02 utside of D01 border: West')
+            raise ValueError ('D02 outside of D01 border: West')
         if (d02.east_s > d01.east_s) or (d02.east_n > d01.east_n):
             print(f'D02: {d02.east_s}, {d02.east_n}')
             print(f'D01: {d01.east_s}, {d01.east_n}')
-            raise ValueError ('D02 utside of D01 border: East')
+            raise ValueError ('D02 outside of D01 border: East')
         if (d02.south < d01.south):
             print(f'D02: {d02.south}')
             print(f'D01: {d01.south}')
-            raise ValueError ('D02 utside of D01 border: South')
+            raise ValueError ('D02 outside of D01 border: South')
         if (d02.north > d01.north):
             print(f'D02: {d02.north}')
             print(f'D01: {d01.north}')
-            raise ValueError ('D02 utside of D01 border: North')
+            raise ValueError ('D02 outside of D01 border: North')
             
         # print('d1 north south eastn easts westn wests  ',d1_coords)
         # print('d2 north south eastn easts westn wests  ',d2_coords)
@@ -108,3 +108,11 @@ class Nest():
         self.j_list.append(j_parent_start)
 
         return ((d01.box_num, d02.box_num), (i_parent_start, j_parent_start))
+
+if __name__=='__main__':
+    print('Demo Mode')
+    geo1 = [-2, 56, 120, 120, 3000, 3000]
+    geo2 = [-2, 56, 120, 120, 1000, 1000]
+    box1 = Box(geo1); box2 = Box(geo2)
+    nest = Nest()
+    print(nest.nest(box1, box2))
