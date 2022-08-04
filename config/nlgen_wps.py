@@ -1,7 +1,9 @@
 import os
 import json
-from nesting import Box, Nest 
 from copy import deepcopy as dc 
+
+from nesting import Box, Nest 
+from namelist_edit import update_line, quote_wrap, list_to_str
 
 from pathlib import Path
 script_path = os.path.dirname(Path(__file__))
@@ -63,45 +65,45 @@ def interpret_wps(conf_dict, output_wps):
 
     # update info
     for linenum, line in enumerate(wps_info):
-        if 'max_dom' in line:
+        if '=' not in line:
+            continue
+        else:
+            varname = line.split('=')[0]
+            varname = varname.strip(' ')
+
+        if varname == 'max_dom':
             wps_info[linenum] = update_line(line, str(max_dom_int))
-        elif 'start_date' in line:
+        elif varname == 'start_date':
             wps_info[linenum] = update_line(line, ','.join([quote_wrap(date_start)]*max_dom_int))
-        elif 'end_date' in line:
+        elif varname == 'end_date':
             wps_info[linenum] = update_line(line, ','.join([quote_wrap(date_end)]*max_dom_int))
-        elif 'interval_seconds' in line: 
+        elif varname == 'interval_seconds': 
             wps_info[linenum] = update_line(line, str(interval_sec_int))
-        elif 'opt_output_from_geogrid_path' in line:
+        elif varname == 'opt_output_from_geogrid_path':
             wps_info[linenum] = update_line(line, quote_wrap(wps_output_path))
-        elif 'opt_output_from_metgrid_path' in line:
+        elif varname == 'opt_output_from_metgrid_path':
             wps_info[linenum] = update_line(line, quote_wrap(wps_output_path))
-        elif 'ref_lon' in line:
+        elif varname == 'ref_lon':
             wps_info[linenum] = update_line(line, str(main_box_geo[0]))
-        elif 'ref_lat' in line:
+        elif varname == 'ref_lat':
             wps_info[linenum] = update_line(line, str(main_box_geo[1]))
-        elif 'dx' in line:
+        elif varname == 'dx':
             wps_info[linenum] = update_line(line, str(main_box_geo[4]))
-        elif 'dy' in line:
+        elif varname == 'dy':
             wps_info[linenum] = update_line(line, str(main_box_geo[5]))
 
-        elif 'parent_id' in line:
-            parent_id_new = ', '.join([str(x) for x in parent_id_list])
-            wps_info[linenum] = update_line(line, parent_id_new)
-        elif 'parent_grid_ratio' in line:
-            ratio_new = ', '.join([str(x) for x in ratio_list])
-            wps_info[linenum] = update_line(line, ratio_new)
-        elif 'i_parent_start' in line:
-            i_start_new = ', '.join([str(x) for x in i_start_list])
-            wps_info[linenum] = update_line(line, i_start_new)
-        elif 'j_parent_start' in line:
-            j_start_new = ', '.join([str(x) for x in j_start_list])
-            wps_info[linenum] = update_line(line, j_start_new)
-        elif 'e_we' in line:
-            e_we_new = ', '.join([str(x) for x in e_we_list])
-            wps_info[linenum] = update_line(line, e_we_new)
-        elif 'e_sn' in line:
-            e_sn_new = ', '.join([str(x) for x in e_sn_list])
-            wps_info[linenum] = update_line(line, e_sn_new)
+        elif varname == 'parent_id':
+            wps_info[linenum] = update_line(line, list_to_str(parent_id_list))
+        elif varname == 'parent_grid_ratio':
+            wps_info[linenum] = update_line(line, list_to_str(ratio_list))
+        elif varname == 'i_parent_start':
+            wps_info[linenum] = update_line(line, list_to_str(i_start_list))
+        elif varname == 'j_parent_start':
+            wps_info[linenum] = update_line(line, list_to_str(j_start_list))
+        elif varname == 'e_we':
+            wps_info[linenum] = update_line(line, list_to_str(e_we_list))
+        elif varname == 'e_sn':
+            wps_info[linenum] = update_line(line, list_to_str(e_sn_list))
 
         
     with open(output_wps, 'w') as f:
@@ -110,7 +112,7 @@ def interpret_wps(conf_dict, output_wps):
 
 if __name__=='__main__':
     nl_conf_default = os.path.join(script_path, 'nl.conf')
-    nl_conf = input(f'Input config file. Default: {nl_conf_default}')
+    nl_conf = input(f'Input config file. Default: {nl_conf_default} \n>>')
     if len(nl_conf) < 1:
         nl_conf = nl_conf_default 
     conf_file = open(nl_conf)
