@@ -1,0 +1,11 @@
+numpy
+pandas
+ConfigParser
+geojson
+geopandas
+hyper
+pika
+tqdm
+rabbitpy
+shapely
+redis
