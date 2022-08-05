@@ -4,8 +4,8 @@ USER root
 
 # 可以先配置Git代理，完成下载再取消代理。
 # 下载WRF和WPS，以及Dave Gill用的一个测试脚本。这个测试脚本编译用不上，可以不下载。
-RUN git config --global http.proxy http://10.2.0.94:61003 \
-  && git config --global https.proxy http://10.2.0.94:61003 \
+RUN git config --global http.proxy http://10.2.3.4:54321 \
+  && git config --global https.proxy http://10.2.3.4:54321 \
   && git config --global http.postBuffer 50M \
   && git clone https://github.com/wrf-model/WRF.git WRF \
   && cd WRF && git checkout release-v4.4 && cd .. \

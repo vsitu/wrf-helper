@@ -3,7 +3,7 @@ import json
 from copy import deepcopy as dc 
 
 from nesting import Box, Nest 
-from namelist_edit import update_line, quote_wrap, list_to_str
+from config.nledit import update_line, quote_wrap, list_to_str
 
 from pathlib import Path
 script_path = os.path.dirname(Path(__file__))
