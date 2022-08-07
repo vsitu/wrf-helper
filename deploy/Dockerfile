@@ -21,3 +21,8 @@ ENV WRF_DIR=/wrf/WRF/
 RUN mv /wrf/build-wps.csh /wrf/WPS/ \
   && cd /wrf/WPS/ \
   && ./build-wps.csh 3 8
+
+RUN git clone https://github.com/vysitu/wrf-helper.git \
+  && https://github.com/vysitu/wrf-helper.git \
+  && pip intall -r wrf-helper/deploy/req.txt \
+  && pip install -r wrf-helper/deploy/req_visual.txt

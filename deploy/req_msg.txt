@@ -1,5 +1,4 @@
 ConfigParser
-geojson
 hyper
 pika
 tqdm

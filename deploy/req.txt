@@ -2,3 +2,4 @@ numpy
 pandas
 geopandas
 shapely
+geojson
