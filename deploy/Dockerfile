@@ -12,7 +12,6 @@ RUN git config --global http.postBuffer 50M \
 RUN pip3 install --upgrade pip \
   && git clone https://github.com/vysitu/wrf-helper.git \
   && pip3 install -r wrf-helper/deploy/req.txt \
-  && pip3 install -r wrf-helper/deploy/req_visual.txt \
   && cp wrf-helper/deploy/*.csh /wrf/
 
 CMD ["/bin/tcsh"]
