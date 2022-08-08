@@ -6,8 +6,12 @@ RUN git config --global http.postBuffer 50M \
   && cd WRF && git checkout release-v4.4 && cd .. \
   && git clone https://github.com/wrf-model/WPS.git WPS \
   && cd WPS && git checkout release-v4.4 && cd .. \
-  && && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
+  && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
   && ln -sf SCRIPTS/Namelists . 
+
+RUN git clone https://github.com/vysitu/wrf-helper.git \
+  && pip install -r wrf-helper/deploy/req.txt \
+  && pip install -r wrf-helper/deploy/req_visual.txt
 
 CMD ["/bin/tcsh"]
 
@@ -22,8 +26,3 @@ ENV WRF_DIR=/wrf/WRF/
 RUN mv /wrf/build-wps.csh /wrf/WPS/ \
   && cd /wrf/WPS/ \
   && ./build-wps.csh 3 8
-
-RUN git clone https://github.com/vysitu/wrf-helper.git \
-  && https://github.com/vysitu/wrf-helper.git \
-  && pip intall -r wrf-helper/deploy/req.txt \
-  && pip install -r wrf-helper/deploy/req_visual.txt
