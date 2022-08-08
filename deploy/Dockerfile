@@ -9,13 +9,13 @@ RUN git config --global http.postBuffer 50M \
   && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
   && ln -sf SCRIPTS/Namelists . 
 
-RUN git clone https://github.com/vysitu/wrf-helper.git \
-  && pip install -r wrf-helper/deploy/req.txt \
-  && pip install -r wrf-helper/deploy/req_visual.txt
+RUN pip3 install --upgrade pip
+  && git clone https://github.com/vysitu/wrf-helper.git \
+  && pip3 install -r wrf-helper/deploy/req.txt \
+  && pip3 install -r wrf-helper/deploy/req_visual.txt \
+  && cp wrf-helper/deploy/*.csh /wrf/
 
 CMD ["/bin/tcsh"]
-
-COPY ./*.csh /wrf/
 
 RUN chmod 755 build-wrf.csh \
   && ./build-wrf.csh BUILD CLEAN 34 1 em_real -d J=-j@8 \
