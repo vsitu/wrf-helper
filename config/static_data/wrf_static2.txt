@@ -1,0 +1,13 @@
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_high_res_mandatory.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_low_res_mandatory.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_thompson28_chem.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_noahmp.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/tile_drainage_map.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/irrigation.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_px.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_urban.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_ssib.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_older_than_2000.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_alt_lsm.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/modis_landuse_20class_15s_with_lakes.tar.gz
+https://www2.mmm.ucar.edu/wrf/src/wps_files/updated_Iceland_LU.tar.gz

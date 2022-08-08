@@ -9,7 +9,7 @@ RUN git config --global http.postBuffer 50M \
   && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
   && ln -sf SCRIPTS/Namelists . 
 
-RUN pip3 install --upgrade pip
+RUN pip3 install --upgrade pip \
   && git clone https://github.com/vysitu/wrf-helper.git \
   && pip3 install -r wrf-helper/deploy/req.txt \
   && pip3 install -r wrf-helper/deploy/req_visual.txt \
