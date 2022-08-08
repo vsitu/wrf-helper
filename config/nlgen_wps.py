@@ -1,12 +1,12 @@
-import os
+import os, sys
 import json
 from copy import deepcopy as dc 
+from pathlib import Path
+script_path = os.path.dirname(Path(__file__))  # wrf-helper/config
+sys.path.append(os.path.dirname(script_path))  # wrf-helper
 
 from config.nesting import Box, Nest 
 from config.nledit import update_line, quote_wrap, list_to_str
-
-from pathlib import Path
-script_path = os.path.dirname(Path(__file__))
 
 target_fields = [
     'max_dom',
