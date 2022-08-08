@@ -6,6 +6,7 @@ RUN git config --global http.postBuffer 50M \
   && cd WRF && git checkout release-v4.4 && cd .. \
   && git clone https://github.com/wrf-model/WPS.git WPS \
   && cd WPS && git checkout release-v4.4 && cd .. \
+  && && git clone https://github.com/davegill/SCRIPTS.git SCRIPTS \
   && ln -sf SCRIPTS/Namelists . 
 
 CMD ["/bin/tcsh"]
