@@ -1,0 +1,9 @@
+#!/bin/tcsh
+
+./geogrid.exe
+ls -lath /wrf_data/WPS/zunyi/geo_em.d*
+./link_grib.csh /wrf_data/gfs/0620/*
+ln -sf ungrib/Variable_Tables/Vtable.GFS Vtable
+./ungrib.exe
+ls -lath FILE*
+./metgrid.exe

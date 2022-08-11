@@ -1,0 +1,5 @@
+#!/bin/tcsh
+
+ln -sf /wrf_data/WPS/zunyi/met_em.d* . 
+mpirun -np 10 --allow-run-as-root ./real.exe 
+mpirun -np 10 --allow-run-as-root ./wrf.exe 
