@@ -61,6 +61,12 @@ def interpret_wrf(conf_dict, output_wrf):
     # make dirs
     os.makedirs(conf_dict['wrf_output_path'], exist_ok=True)
 
+    # optional settings
+    try: 
+        history_interval = eval(conf_dict['history_interval'])
+    except: 
+        history_interval = False
+
     # domains
     sub_doms = max_dom_int - 1
     main_box_geo = eval(conf_dict['main_box'])
@@ -146,7 +152,10 @@ def interpret_wrf(conf_dict, output_wrf):
             gwd_opt = [1] + [0]*sub_doms
             wrf_info[linenum] = update_line(line, list_to_str(gwd_opt))
         elif varname == 'history_interval':  # default: 60min for main-box, 10min for sub-box
-            hist_intv = [60] + [10]*sub_doms
+            if history_interval:
+                hist_intv = history_interval
+            else:
+                hist_intv = [60] + [10]*sub_doms
             wrf_info[linenum] = update_line(line, list_to_str(hist_intv))
 
         # duplicate default values

@@ -1,0 +1,29 @@
+{
+    "domain_count":"1",
+    "date_start":"2017-06-20_00:00:00",
+    "date_end":"2017-06-20_12:00:00",
+
+    # meteorological input data interval
+    "interval_hours":"6",
+
+    # input geographical static data path, usually no need to change
+    "geog_input_path":"/wrf_data/geog/",
+
+    # meteorological data path
+    "met_input_path":"/wrf_data/gfs/0620/",
+
+    # (interim) WPS data output path
+    "wps_output_path":"/wrf_data/WPS/luhuo/",
+
+    # WRF data output path
+    "wrf_output_path":"/wrf_data/luhuo/gfs_0620/",
+
+    "main_box":"[100.5, 30.5, 120, 120, 3000, 3000]",
+    # can do without sub_boxes
+    "sub_box_1":"[100.5, 30.5, 120, 120, 3, 1]", 
+    "sub_box_2":"[100.51, 30.51, 100, 100, 3, 1]",
+
+    # optional
+    # history file output interval (60 means 60 minutes)
+    "history_interval":"[60,10,10]"
+}
