@@ -17,13 +17,6 @@ target_fields = [
     'opt_output_from_metgrid_path'
 ]
 
-def update_line(str_old:str, info:str):
-    str_new = str_old.split('=')[0]
-    str_new += '= ' + info + ',\n'
-    return(str_new)
-
-def quote_wrap(value:str):
-    return('\''+value+'\'')
 
 def interpret_wps(conf_dict, output_wps):
     template_file = os.path.join(script_path, 'nl_template_wps.txt')
@@ -35,8 +28,11 @@ def interpret_wps(conf_dict, output_wps):
     date_start = conf_dict['date_start']
     date_end = conf_dict['date_end']
     interval_sec_int = int(int(conf_dict['interval_hours']) * 3600)
+    geog_input_path = conf_dict['geog_input_path']
     wps_output_path = conf_dict['wps_output_path']
-
+    # make dirs
+    os.makedirs(wps_output_path, exist_ok=True)
+    
     # domains
     sub_doms = max_dom_int - 1
     main_box_geo = eval(conf_dict['main_box'])
@@ -79,6 +75,8 @@ def interpret_wps(conf_dict, output_wps):
             wps_info[linenum] = update_line(line, ','.join([quote_wrap(date_end)]*max_dom_int))
         elif varname == 'interval_seconds': 
             wps_info[linenum] = update_line(line, str(interval_sec_int))
+        elif varname == 'geog_data_path':
+            wps_info[linenum] = update_line(line, quote_wrap(geog_input_path))
         elif varname == 'opt_output_from_geogrid_path':
             wps_info[linenum] = update_line(line, quote_wrap(wps_output_path))
         elif varname == 'opt_output_from_metgrid_path':

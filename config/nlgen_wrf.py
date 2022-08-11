@@ -58,6 +58,8 @@ def interpret_wrf(conf_dict, output_wrf):
     interval_sec_int = int(int(conf_dict['interval_hours']) * 3600)
     wrf_output_path = os.path.join(conf_dict['wrf_output_path'],
                                     'wrfout_d<domain>_<date>')
+    # make dirs
+    os.makedirs(conf_dict['wrf_output_path'], exist_ok=True)
 
     # domains
     sub_doms = max_dom_int - 1
@@ -113,6 +115,8 @@ def interpret_wrf(conf_dict, output_wrf):
             wrf_info[linenum] = update_line(line, str(interval_sec_int))
         elif varname == 'history_outname':
             wrf_info[linenum] = update_line(line, quote_wrap(wrf_output_path))
+        elif varname == 'time_step':
+            wrf_info[linenum] = update_line(line, str(int(main_box_geo[4] /1000.0 * 5.0)))
         elif varname == 'ref_lon':
             wrf_info[linenum] = update_line(line, str(main_box_geo[0]))
         elif varname == 'ref_lat':
@@ -141,7 +145,7 @@ def interpret_wrf(conf_dict, output_wrf):
         elif varname == 'gwd_opt':
             gwd_opt = [1] + [0]*sub_doms
             wrf_info[linenum] = update_line(line, list_to_str(gwd_opt))
-        elif varname == 'history_interval':
+        elif varname == 'history_interval':  # default: 60min for main-box, 10min for sub-box
             hist_intv = [60] + [10]*sub_doms
             wrf_info[linenum] = update_line(line, list_to_str(hist_intv))
 
