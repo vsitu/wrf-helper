@@ -33,6 +33,15 @@ def interpret_wps(conf_dict, output_wps):
     # make dirs
     os.makedirs(wps_output_path, exist_ok=True)
     
+    # optional settings
+    try: 
+        map_proj = conf_dict['map_projection']
+        std_lon = conf_dict['standard_longitude']
+        std_lat1 = conf_dict['standard_latitude1']
+        std_lat2 = conf_dict['standard_latitude2']
+    except: 
+        map_proj = False
+
     # domains
     sub_doms = max_dom_int - 1
     main_box_geo = eval(conf_dict['main_box'])
@@ -56,8 +65,14 @@ def interpret_wps(conf_dict, output_wps):
         ratio_list.append(sub_box_ratio)
         i_start_list.append(round(i_start))
         j_start_list.append(round(j_start))
-        e_we_list.append(sub_box_geo[2])
-        e_sn_list.append(sub_box_geo[3])
+        sub_we_size = int(sub_box_geo[2])
+        sub_sn_size = int(sub_box_geo[3])
+        while sub_we_size % int(sub_box_ratio) != 1:
+            sub_we_size += 1
+        while sub_sn_size % int(sub_box_ratio) != 1:
+            sub_sn_size += 1
+        e_we_list.append(sub_we_size)
+        e_sn_list.append(sub_sn_size)
 
     # update info
     for linenum, line in enumerate(wps_info):
@@ -102,7 +117,23 @@ def interpret_wps(conf_dict, output_wps):
             wps_info[linenum] = update_line(line, list_to_str(e_we_list))
         elif varname == 'e_sn':
             wps_info[linenum] = update_line(line, list_to_str(e_sn_list))
-
+            
+    # optional settings
+    for linenum, line in enumerate(wps_info):
+        if '=' not in line:
+            continue
+        else:
+            varname = line.split('=')[0]
+            varname = varname.strip(' ')
+        if map_proj:
+            if varname == 'map_proj':
+                wps_info[linenum] = update_line(line, '\''+map_proj+'\'')
+            elif varname == 'stand_lon':
+                wps_info[linenum] = update_line(line, str(std_lon))
+            elif varname == 'truelat1':
+                wps_info[linenum] = update_line(line, str(std_lat1))
+            elif varname == 'truelat2':
+                wps_info[linenum] = update_line(line, str(std_lat2))
         
     with open(output_wps, 'w') as f:
         for line in wps_info:
