@@ -6,7 +6,7 @@ script_path = os.path.dirname(Path(__file__))  # wrf-helper/config
 sys.path.append(os.path.dirname(script_path))  # wrf-helper
 
 from config.nesting import Box, Nest 
-from config.nledit import update_line, quote_wrap, list_to_str
+from config.nledit import update_line, quote_wrap, list_to_str, default_dup
 
 target_fields = [
     'max_dom',
@@ -117,7 +117,7 @@ def interpret_wps(conf_dict, output_wps):
             wps_info[linenum] = update_line(line, list_to_str(e_we_list))
         elif varname == 'e_sn':
             wps_info[linenum] = update_line(line, list_to_str(e_sn_list))
-            
+
     # optional settings
     for linenum, line in enumerate(wps_info):
         if '=' not in line:
@@ -134,6 +134,10 @@ def interpret_wps(conf_dict, output_wps):
                 wps_info[linenum] = update_line(line, str(std_lat1))
             elif varname == 'truelat2':
                 wps_info[linenum] = update_line(line, str(std_lat2))
+
+        # duplicate defautls
+        if varname in ['geog_data_res']:
+            wps_info[linenum] = default_dup(line, max_dom_int)
         
     with open(output_wps, 'w') as f:
         for line in wps_info:

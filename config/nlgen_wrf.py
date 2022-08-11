@@ -7,8 +7,7 @@ script_path = os.path.dirname(Path(__file__))
 sys.path.append(os.path.dirname(script_path))  # wrf-helper
 
 from config.nesting import Box, Nest 
-from config.nledit import update_line, quote_wrap, list_to_str
-
+from config.nledit import update_line, quote_wrap, list_to_str, default_dup
 
 
 
@@ -27,7 +26,6 @@ datetime_fields = {
     'end_day':'%d','end_hour':'%H'}
 
 
-
 def date_component(start_date: str, end_date: str, varname: str):
     start_obj = dt.datetime.strptime(start_date, '%Y-%m-%d_%H:%M:%S')
     end_obj = dt.datetime.strptime(end_date, '%Y-%m-%d_%H:%M:%S')
@@ -38,11 +36,6 @@ def date_component(start_date: str, end_date: str, varname: str):
         output = dt.datetime.strftime(end_obj, datetime_fields[varname])
     return str(output)
 
-def default_dup(line:str, dup_num:int):
-    value = line.split('=')[-1].split(',')[0].strip(' ')
-    newvalue = ','.join([str(value)]*dup_num)
-    new_line = update_line(line, newvalue)
-    return new_line
 
 
 
@@ -52,6 +45,8 @@ def interpret_wrf(conf_dict, output_wrf):
         wrf_info = fp.readlines()
     
     # extract information to strings
+    num_proc = int(conf_dict['processors'])
+    nproc_x = int(num_proc/2)
     max_dom_int = int(conf_dict['domain_count'])
     date_start = conf_dict['date_start']
     date_end = conf_dict['date_end']
@@ -91,8 +86,14 @@ def interpret_wrf(conf_dict, output_wrf):
         ratio_list.append(sub_box_ratio)
         i_start_list.append(round(i_start))
         j_start_list.append(round(j_start))
-        e_we_list.append(sub_box_geo[2])
-        e_sn_list.append(sub_box_geo[3])
+        sub_we_size = int(sub_box_geo[2])
+        sub_sn_size = int(sub_box_geo[3])
+        while sub_we_size % int(sub_box_ratio) != 1:
+            sub_we_size += 1
+        while sub_sn_size % int(sub_box_ratio) != 1:
+            sub_sn_size += 1
+        e_we_list.append(sub_we_size)
+        e_sn_list.append(sub_sn_size)
         grid_id.append(i+1)
 
     # update info
@@ -112,10 +113,12 @@ def interpret_wrf(conf_dict, output_wrf):
             varname = varname.strip(' ')
         # datetime 
         if varname in datetime_fields.keys():
-                datestr = date_component(date_start, date_end, varname)
-                wrf_info[linenum] = update_line(line, ','.join([datestr]*max_dom_int))
+            datestr = date_component(date_start, date_end, varname)
+            wrf_info[linenum] = update_line(line, ','.join([datestr]*max_dom_int))
         # common fields
-        if varname == 'max_dom':
+        if varname == 'nproc_x':
+            wrf_info[linenum] = update_line(line, str(nproc_x))
+        elif varname == 'max_dom':
             wrf_info[linenum] = update_line(line, str(max_dom_int))
         elif varname == 'interval_seconds':
             wrf_info[linenum] = update_line(line, str(interval_sec_int))
@@ -159,7 +162,7 @@ def interpret_wrf(conf_dict, output_wrf):
             wrf_info[linenum] = update_line(line, list_to_str(hist_intv))
 
         # duplicate default values
-        if varname in ['frames_per_outfile','e_vert',
+        if varname in ['input_from_file','frames_per_outfile','e_vert',
             'radt','bldt','cudt','sf_urban_physics',
             'diff_opt','km_opt','diff_6th_opt','diff_6th_factor',
             'zdamp','dampcoef','khdif','kvdif','non_hydrostatic',
