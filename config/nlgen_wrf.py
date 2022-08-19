@@ -7,7 +7,8 @@ script_path = os.path.dirname(Path(__file__))
 sys.path.append(os.path.dirname(script_path))  # wrf-helper
 
 from config.nesting import Box, Nest 
-from config.nledit import update_line, quote_wrap, list_to_str, default_dup
+from config.nledit import (update_line, quote_wrap, 
+                            list_to_str, default_dup)
 
 
 
@@ -40,7 +41,7 @@ def date_component(start_date: str, end_date: str, varname: str):
 
 
 def interpret_wrf(conf_dict, output_wrf):
-    template_file = os.path.join(script_path, 'nl_template_wrf.txt')
+    template_file = os.path.join(script_path, '/templates/nl_template_wrf.txt')
     with open(template_file) as fp:
         wrf_info = fp.readlines()
     

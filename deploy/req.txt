@@ -4,3 +4,4 @@ pandas
 geopandas
 shapely
 geojson
+netCDF4

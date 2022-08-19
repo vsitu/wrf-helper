@@ -6,7 +6,8 @@ script_path = os.path.dirname(Path(__file__))  # wrf-helper/config
 sys.path.append(os.path.dirname(script_path))  # wrf-helper
 
 from config.nesting import Box, Nest 
-from config.nledit import update_line, quote_wrap, list_to_str, default_dup
+from config.nledit import (update_line, quote_wrap, 
+                            list_to_str, default_dup)
 
 target_fields = [
     'max_dom',
@@ -19,7 +20,7 @@ target_fields = [
 
 
 def interpret_wps(conf_dict, output_wps):
-    template_file = os.path.join(script_path, 'nl_template_wps.txt')
+    template_file = os.path.join(script_path, '/templates/nl_template_wps.txt')
     with open(template_file) as fp:
         wps_info = fp.readlines()
     
