@@ -1,0 +1,30 @@
+FROM davegill/wrf-coop:fifteenthtry
+USER root
+WORKDIR /wrf 
+
+RUN mkdir /wrf/WRF \
+  && mkdir /wrf/WPS \
+  && mkdir /wrf/SCRIPTS \
+  && mkdir /wrf/wrf-helper 
+
+COPY ./wrf-code/WRF/* WRF \
+  && ./wrf-code/WPS/* WPS \
+  && ./wrf-code/SCRIPTS/* SCRIPTS  \
+  && ./wrf-helper/* wrf-helper
+
+RUN pip3 install --upgrade pip \
+  && git clone https://github.com/vysitu/wrf-helper.git \
+  && pip3 install -r wrf-helper/deploy/req.txt \
+  && cp wrf-helper/deploy/*.csh /wrf/
+
+CMD ["/bin/tcsh"]
+
+RUN chmod 755 build-wrf.csh \
+  && ./build-wrf.csh BUILD CLEAN 34 1 em_real -d J=-j@8 \
+  && chmod 755 build-wps.csh
+
+ENV WRF_DIR=/wrf/WRF/
+
+RUN mv /wrf/build-wps.csh /wrf/WPS/ \
+  && cd /wrf/WPS/ \
+  && ./build-wps.csh 3 8
