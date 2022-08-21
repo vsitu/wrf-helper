@@ -49,6 +49,21 @@ class Extractor:
                 'lons':ds.variables['XLONG'][0,:,:]
                 }
             
+    def extract(self, varname, geo_desc):
+        '''
+        will determine which group varname belongs to
+        '''
+        if varname in self.normvar.keys():
+            mx, my, outarr = self._resample(self.normvar[varname], geo_desc, self.mesh)
+        elif varname in self.soilvar.keys():
+            mx, my, outarr1 = self._resample(self.soilvar[varname][0,0,:,:], geo_desc, self.mesh)
+            outarr = np.zeros_like(outarr1)
+            outarr = outarr[np.newaxis, :,:]
+            for i in range(1, self.soilvar[varname].shape[1]):
+                mx, my, temp = self._resample(varname, geo_desc, self.mesh)
+                outarr = np.concat([outarr, temp], axis = 0)
+        return mx, my, outarr 
+
     def extract_all(self, geo_desc, mission_id, 
                     nodata = -9999):
         self.res = geo_desc[4]
