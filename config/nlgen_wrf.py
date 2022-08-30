@@ -41,7 +41,7 @@ def date_component(start_date: str, end_date: str, varname: str):
 
 
 def interpret_wrf(conf_dict, output_wrf):
-    template_file = os.path.join(script_path, '/templates/nl_template_wrf.txt')
+    template_file = os.path.join(script_path, './templates/nl_template_wrf.txt')
     with open(template_file) as fp:
         wrf_info = fp.readlines()
     
@@ -63,6 +63,10 @@ def interpret_wrf(conf_dict, output_wrf):
     except: 
         history_interval = False
 
+    # manual override settings
+    if 'manual_override' in conf_dict.keys():
+        manual = conf_dict['manual_override']
+
     # domains
     sub_doms = max_dom_int - 1
     main_box_geo = eval(conf_dict['main_box'])
@@ -72,17 +76,40 @@ def interpret_wrf(conf_dict, output_wrf):
     parent_id_list = [0]; ratio_list = [1] 
     i_start_list = [1]; j_start_list = [1]
     e_we_list = [main_box_geo[2]]; e_sn_list = [main_box_geo[3]]
-    grid_id = [1];
+    sub_box_list = []; sub_box_parent_list = []
     for i in range(1, sub_doms + 1):
         sub_box_def = eval(conf_dict[f'sub_box_{i}'])
-        sub_box_id = sub_box_def[5]  # id for nesting
+        sub_box_parent_id = sub_box_def[5]
+        sub_box_parent_list.append(sub_box_parent_id) # id for nesting
+        if sub_box_parent_id == 1:
+            parent_dx = main_dx
+            parent_dy = main_dy 
+        else: 
+            parent_box = eval(conf_dict[f'sub_box_{sub_box_parent_id - 1}'])
+            parent_dx = int(main_dx / parent_box[4]) 
+            parent_dy = int(main_dy / parent_box[4]) 
+
+        sub_box_def = eval(conf_dict[f'sub_box_{i}'])
         sub_box_ratio = sub_box_def[4]
         sub_box_geo = dc(sub_box_def[:4])
-        sub_box_geo.append(int(main_dx / sub_box_ratio))
-        sub_box_geo.append(int(main_dy / sub_box_ratio))
-        sub_box = Box(geo_desc=sub_box_geo, box_num=sub_box_id)
+        sub_box_geo.append(int(parent_dx / sub_box_ratio))
+        sub_box_geo.append(int(parent_dy / sub_box_ratio))
+        sub_box = Box(geo_desc=sub_box_geo, box_num=i+1)
+        sub_box_list.append(sub_box)
+        
+    print('parent id list', sub_box_parent_list)
+    for i, sub_box in enumerate(sub_box_list):
+        parent_id = sub_box_parent_list[i]
+        if parent_id == 1:
+            parent_box = main_box 
+        else:
+            for ibox, box in enumerate(sub_box_list):
+                if box.box_num == parent_id:
+                    parent_box = box 
+                    break 
+        print(f'parent box id: {parent_box.box_num}')
         n = Nest()
-        parent_id, nested_id, i_start, j_start = n.nest(main_box, sub_box)
+        parent_id, nested_id, i_start, j_start = n.nest(parent_box, sub_box)
         parent_id_list.append(parent_id)
         ratio_list.append(sub_box_ratio)
         i_start_list.append(round(i_start))
@@ -95,7 +122,7 @@ def interpret_wrf(conf_dict, output_wrf):
             sub_sn_size += 1
         e_we_list.append(sub_we_size)
         e_sn_list.append(sub_sn_size)
-        grid_id.append(i+1)
+    grid_id = [x+1 for x in range(max_dom_int)]
 
     # update info
     for linenum, line in enumerate(wrf_info):
@@ -170,6 +197,15 @@ def interpret_wrf(conf_dict, output_wrf):
             'moist_adv_opt','scalar_adv_opt'
             ]:
             wrf_info[linenum] = default_dup(line, max_dom_int)
+        
+    for linenum, line in enumerate(wrf_info):
+        if '=' not in line:
+            continue
+        else:
+            varname = line.split('=')[0]
+            varname = varname.strip(' ')
+        if varname in manual.keys():
+            wrf_info[linenum] = update_line(line, str(manual[varname]))
         
     with open(output_wrf, 'w') as f:
         for line in wrf_info:

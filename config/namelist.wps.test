@@ -1,0 +1,38 @@
+&share
+ wrf_core = 'ARW',
+ max_dom = 3,
+ start_date = '2017-06-20_00:00:00','2017-06-20_00:00:00','2017-06-20_00:00:00',
+ end_date   = '2017-06-20_12:00:00','2017-06-20_12:00:00','2017-06-20_12:00:00',
+ interval_seconds = 21600,
+ opt_output_from_geogrid_path = '/wrf_data/WPS/zunyi/',
+/
+ 
+&geogrid
+ parent_id         = 1, 1, 2,
+ parent_grid_ratio = 1, 3, 3,
+ i_parent_start    = 1, 40, 43,
+ j_parent_start    = 1, 40, 43,
+ e_we              = 120, 100, 100,
+ e_sn              = 120, 100, 100,
+ dx = 3000,
+ dy = 3000,
+ geog_data_res = '30s+modis_lai','30s+modis_lai','30s+modis_lai',
+ map_proj = 'lambert',
+ ref_lat   = 26.5,
+ ref_lon   = 106.5,
+ truelat1  = 25,
+ truelat2  = 47,
+ stand_lon = 100,
+ geog_data_path = '/wrf_data/geog/',
+/
+ 
+&ungrib
+ out_format = 'WPS',
+ prefix = 'FILE',
+ # ec_rec_len = 26214508,
+/
+ 
+&metgrid
+ fg_name = 'FILE',
+ opt_output_from_metgrid_path = '/wrf_data/WPS/zunyi/',
+/
