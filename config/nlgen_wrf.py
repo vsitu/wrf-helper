@@ -154,6 +154,8 @@ def interpret_wrf(conf_dict, output_wrf):
             wrf_info[linenum] = update_line(line, quote_wrap(wrf_output_path))
         elif varname == 'time_step':
             wrf_info[linenum] = update_line(line, str(int(main_box_geo[4] /1000.0 * 5.0)))
+        elif varname == 'radt':
+            wrf_info[linenum] = update_line(line, str(int(main_box_geo[4] /1000.0 * 1.0)))
         elif varname == 'ref_lon':
             wrf_info[linenum] = update_line(line, str(main_box_geo[0]))
         elif varname == 'ref_lat':
