@@ -23,7 +23,7 @@ class Extractor:
 
         # variables
         normal_var = ['T2', 'PSFC', 'U10', 'V10', 'SWUPB', 'SWDNB', 'SNOWC', 'SNOWH']
-        calc_var = ['QVAPOR']
+        calc_var = ['Q2'] # QV at 2m, only 1 layer; QVAPOR is QV at different levels
         accu_var = ['RAINNC']
         cloud_var = ['CLDFRA']
         soil_var = ['TSLB', 'SMOIS']
@@ -182,10 +182,10 @@ class Extractor:
 
     # https://forum.mmm.ucar.edu/threads/relative-humidity.9134/
     def _rh1(self, T, P, Q):
-        svp1=611.2
-        svp2=17.67
-        svp3=29.65
-        svpt0=273.15
+        svp1 = 611.2
+        svp2 = 17.67
+        svp3 = 29.65
+        svpt0 = 273.15
         eps = 0.622
         rh = 1e2 * (P*Q/(Q*(1.-eps) + eps))/(svp1*np.exp(svp2*(T-svpt0)/(T-svp3)))
         return rh
