@@ -35,7 +35,12 @@ class Extractor:
             for vname in normal_var:
                 # print(vname, ds.variables[vname][:].shape)
                 self.normvar[vname] = ds.variables[vname][0,:,:]
-            
+            # column integrated cldfra is also a normvar
+            self.cloudfrac = ds.variables['CLDFRA'][0,:,:,:]
+            self.cldfra_sum = np.sum(self.cloudfrac, axis = 0)
+            self.cldfra = np.where(self.cldfra_sum > 1, 1, self.cldfra_sum)
+            self.normvar['CLDFRA'] = self.cldfra
+
             self.windvar = {}
             for vname in wv_var:
                 self.windvar[vname] = ds.variables[vname][:]
@@ -174,3 +179,13 @@ class Extractor:
         old_mesh = np.stack([old_x, old_y])
         output = gridd(old_mesh.T, wind1d, (meshx, meshy), method = 'linear')
         return meshx, meshy, output
+
+    # https://forum.mmm.ucar.edu/threads/relative-humidity.9134/
+    def _rh1(self, T, P, Q):
+        svp1=611.2
+        svp2=17.67
+        svp3=29.65
+        svpt0=273.15
+        eps = 0.622
+        rh = 1e2 * (P*Q/(Q*(1.-eps) + eps))/(svp1*np.exp(svp2*(T-svpt0)/(T-svp3)))
+        return rh
